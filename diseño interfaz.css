@@ -1,0 +1,127 @@
+/* Estilos generales */
+body { 
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    padding: 0; 
+    margin: 0;
+}
+
+/* Estilo para el encabezado */
+header {
+    background-color: #050C9C;
+    color: white;
+    text-align: center;
+    padding: 40px;
+    border-radius: 0px;
+    margin-bottom: 60px;
+    opacity: 0;
+    animation: fadeIn 1s forwards; /* Animación de aparición */
+}
+
+/* Animación para el fade-in */
+@keyframes fadeIn {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+/* Animación para el menú lateral */
+@keyframes slideIn {
+    0% { left: -250px; }
+    100% { left: 0; }
+}
+
+/* Menú lateral */
+.side-menu {
+    position: fixed;
+    top: 50px;
+    left: -250px; /* Empieza fuera de la pantalla */
+    width: 250px;
+    height: 100%;
+    background-color: #007bff;
+    color: white;
+    transition: left 0.3s ease;
+    padding-top: 50px;
+    z-index: 9999;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.side-menu.open {
+    left: 0; /* Cuando está abierto, el menú se desliza a la izquierda */
+    animation: slideIn 0.5s ease forwards; /* Animación de deslizamiento */
+}
+
+/* Estilo para los enlaces del menú */
+.side-menu a {
+    padding: 10px 15px;
+    text-decoration: none;
+    color: white;
+    display: block;
+    transition: 0.3s;
+}
+
+.side-menu a:hover {
+    background-color: #0056b3;
+}
+
+/* Estilo para el botón de cerrar */
+.side-menu .close-btn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px;
+    color: white;
+    cursor: pointer;
+}
+
+/* Botón de abrir el menú */
+.open-menu-btn {
+    position: absolute;
+    top: 50px;
+    left: 10px;
+    font-size: 24px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+    padding: 10px 15px;
+    border-radius: 5px;
+    z-index: 10000;
+    opacity: 0;
+    animation: fadeIn 1s forwards 0.5s; /* Animación de desvanecimiento para el botón */
+}
+
+/* Animación para el fade-in de las imágenes */
+.capture-img, .video-container img {
+    opacity: 0;
+    animation: fadeIn 1.5s forwards; /* Aparecen con un pequeño retraso */
+    animation-delay: 1s; /* Retraso de 1 segundo */
+}
+
+/* Estilos de los contenedores */
+.video-container, .captures-container {
+    margin-bottom: 20px;
+    border: 2px solid #007bff;
+    border-radius: 10px;
+    padding: 10px;
+    background-color: white;
+}
+
+/* Animación de las imágenes de captura */
+.capture-img { 
+    width: 300px; 
+    margin: 10px; 
+    border-radius: 10px; 
+    box-shadow: 0 0 10px rgba(0,0,0,0.2); 
+    animation: fadeIn 1.5s forwards;
+    animation-delay: 0.5s; /* Aparece con un pequeño retraso */
+}
+
+/* Formulario */
+form { text-align: center; }
+
+/* Estilos para los botones */
+button { margin-top: 10px; }
+
+/* Estilo para las columnas */
+.col-md-6 { padding: 20px; }
+
