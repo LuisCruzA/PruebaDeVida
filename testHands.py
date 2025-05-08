@@ -1,9 +1,16 @@
 import cv2 as cv
+import pickle as pick
+import os
 import mediapipe as mp
 import mediapipe.python.solutions.hands as mp_hands
 import mediapipe.python.solutions.drawing_utils as drawing
 import mediapipe.python.solutions.drawing_styles as drawing_styles
 import mediapipe.python.solutions.face_mesh as mp_face_mesh
+from scipy.spatial.distance import euclidean
+import numpy as np
+
+GESTURE_DIR = "gestos_guardados"
+os.makedirs(GESTURE_DIR, exist_ok=True)
 
 # Initialize the Hands model
 hands = mp_hands.Hands(
@@ -14,6 +21,10 @@ hands = mp_hands.Hands(
 face = mp_face_mesh.FaceMesh(static_image_mode=False, min_detection_confidence=0.5)
 # face_mesh = mp.solutions.face_mesh.FaceMesh()
 
+def es_ceja_levantada(landmarks):
+    ceja = landmarks[55].y
+    ojo = landmarks[159].y
+    return ceja < ojo - 0.02
 
 # Open the camera
 cam = cv.VideoCapture(0)
@@ -63,7 +74,49 @@ while cam.isOpened():
                 landmark_drawing_spec=None,
                 connection_drawing_spec=drawing_styles.get_default_face_mesh_contours_style()
             )
+    
+    # key = cv.waitKey(1) & 0xFF
+    # if key == ord('s') and face_detected.multi_face_landmarks:
+    #     # Presionaste 's': guardar gesto
+    #     with open("referencia_gesto.pkl", "wb") as f:
+    #         pick.dump(current_face, f)
+    #     print("Gesto guardado")
+    # elif key == ord('q'):
+    #     break
 
+    key = cv.waitKey(1) & 0xFF
+    if key == ord('s') and current_face:
+        filepath = os.path.join(GESTURE_DIR, f"GestoGuardado.pkl")
+        with open(filepath, "wb") as f:
+            pick.dump(current_face, f)
+        print(f"Gesto guardado en {filepath}")
+
+    elif key == ord('c'):
+        filepath = os.path.join(GESTURE_DIR, f"GestoGuardado.pkl")
+        with open(filepath, "rb") as f:
+            ref_gesture = pick.load(f)
+
+        # Normalizar ambos (por ejemplo, respecto al centro del rostro)
+        def normalize(points):
+            points = np.array(points)
+            center = points.mean(axis=0)
+            return points - center
+
+        norm_current = normalize(current_face)
+        norm_ref = normalize(ref_gesture)
+
+            # Calcular distancia promedio entre puntos
+        dist = np.mean([euclidean(a, b) for a, b in zip(norm_current, norm_ref)])
+
+        if dist < 0.05:  # Umbral ajustable
+            print("Gesto reconocido")
+                
+        elif key == ord('q'):
+            break    
+        
+        
+
+    
     # Display the frame with annotations
     cv.imshow("Show Video", frame)
 
