@@ -8,6 +8,7 @@ import mediapipe.python.solutions.drawing_styles as drawing_styles
 import mediapipe.python.solutions.face_mesh as mp_face_mesh
 from scipy.spatial.distance import euclidean
 import numpy as np
+from random import *
 
 GESTURE_DIR = "gestos_guardados"
 os.makedirs(GESTURE_DIR, exist_ok=True)
@@ -18,16 +19,28 @@ hands = mp_hands.Hands(
     max_num_hands=2,           # Maximum number of hands to detect
     min_detection_confidence=0.5  # Minimum confidence threshold for hand detection
 )
-face = mp_face_mesh.FaceMesh(static_image_mode=False, min_detection_confidence=0.5)
+face = mp_face_mesh.FaceMesh(
+    static_image_mode=False, 
+    min_detection_confidence=0.5)
 # face_mesh = mp.solutions.face_mesh.FaceMesh()
 
-def es_ceja_levantada(landmarks):
-    ceja = landmarks[55].y
-    ojo = landmarks[159].y
-    return ceja < ojo - 0.02
 
 # Open the camera
 cam = cv.VideoCapture(0)
+gestos = ["Sonrisa"]
+gestoAleatorio = choice(gestos)
+print(gestoAleatorio)
+
+
+
+def is_smiling(landmarks):
+        left_mouth = landmarks[61]  # Comisura izquierda
+        right_mouth = landmarks[291]  # Comisura derecha
+        top_lip = landmarks[0]  # Nariz base
+        mouth_width = abs(left_mouth.x - right_mouth.x)
+        mouth_height = abs((left_mouth.y + right_mouth.y) / 2 - top_lip.y)
+        
+        return mouth_width > 0.25 and mouth_height>0.05
 
 while cam.isOpened():
     # Read a frame from the camera
@@ -74,6 +87,8 @@ while cam.isOpened():
                 landmark_drawing_spec=None,
                 connection_drawing_spec=drawing_styles.get_default_face_mesh_contours_style()
             )
+        if is_smiling(face_landmarks.landmark):
+                print("¡Está sonriendo!")    
     
     # key = cv.waitKey(1) & 0xFF
     # if key == ord('s') and face_detected.multi_face_landmarks:
@@ -83,16 +98,20 @@ while cam.isOpened():
     #     print("Gesto guardado")
     # elif key == ord('q'):
     #     break
+    
+    
+    
 
     key = cv.waitKey(1) & 0xFF
     if key == ord('s') and current_face:
-        filepath = os.path.join(GESTURE_DIR, f"GestoGuardado.pkl")
+        filepath = os.path.join(GESTURE_DIR, f"Sonrisa.pkl")
         with open(filepath, "wb") as f:
             pick.dump(current_face, f)
         print(f"Gesto guardado en {filepath}")
 
     elif key == ord('c'):
-        filepath = os.path.join(GESTURE_DIR, f"GestoGuardado.pkl")
+        
+        filepath = os.path.join(GESTURE_DIR, f"{gestoAleatorio}.pkl")
         with open(filepath, "rb") as f:
             ref_gesture = pick.load(f)
 
