@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reconocimiento de Gestos</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+    <!-- Botón para abrir menú -->
+    <button class="open-menu-btn" onclick="toggleMenu()">☰</button>
+
+    
+    <!-- Menú lateral -->
+    <div class="side-menu" id="sideMenu">
+        <span class="close-btn" onclick="toggleMenu()">&times;</span>
+        <a href="#">Inicio</a>
+        <a href="#">Sobre el proyecto</a>
+        <a href="#">Contacto</a>
+    </div>
+
+    <!-- Encabezado principal -->
+    <header>
+        <h1>Prueba de Vida</h1>
+    </header>
+
+    <!-- Contenedor general dividido en dos columnas -->
+    <div style="display: flex; justify-content: center; align-items: flex-start; gap: 30px; margin-top: 30px;">
+        <!-- Contenedor de video a la izquierda -->
+        <div class="video-container" style="width: 50%;">
+            <h2 style="text-align: center;">Cámara en Vivo</h2>
+            <img src="{{ url_for('video_feed') }}" id="videoStream" style="width: 100%; height: 70vh; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);" />
+        </div>
+
+        <!-- Contenedor de imagen aleatoria y verificación a la derecha -->
+        <div class="captures-container" style="width: 35%; text-align: center;">
+            <h2>Imagen Objetivo</h2>
+            <img src="https://via.placeholder.com/300x300?text=Imagen+Aleatoria" id="randomImage" class="capture-img">
+            <div style="margin-top: 20px;">
+                
+                <button onclick="verificarCumplimiento()" style="padding: 10px 20px; font-size: 16px;">Verificar</button>
+                <p id="resultado" style="margin-top: 15px; font-size: 18px; font-weight: bold;"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script para manejar el menú y la verificación -->
+    <script>
+        function toggleMenu() {
+            var menu = document.getElementById("sideMenu");
+            if (menu.classList.contains("open")) {
+                menu.classList.remove("open");
+            } else {
+                menu.classList.add("open");
+            }
+        }
+
+        function verificarCumplimiento() {
+            // Simulación aleatoria para ejemplo (puedes reemplazarlo con lógica real del backend)
+            const resultado = Math.random() < 0.5 ? "Cumple" : "No cumple";
+            const resultadoElem = document.getElementById("resultado");
+            resultadoElem.textContent = resultado;
+            resultadoElem.style.color = resultado === "Cumple" ? "green" : "red";
+        }
+
+        
+        
+
+    </script>
+</body>
+</html>
+
+
