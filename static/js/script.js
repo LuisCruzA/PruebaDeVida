@@ -26,3 +26,5 @@ animados.forEach(el => {
   el.style.animationPlayState = 'paused';
   observer.observe(el);
 });
+
+
