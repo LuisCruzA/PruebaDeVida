@@ -35,13 +35,34 @@
         <!-- Contenedor de imagen aleatoria y verificación a la derecha -->
         <div class="captures-container" style="width: 35%; text-align: center;">
             <h2>Imagen Objetivo</h2>
-            <img src="https://via.placeholder.com/300x300?text=Imagen+Aleatoria" id="randomImage" class="capture-img">
+            <img src="" id="randomImage" class="capture-img">
             <div style="margin-top: 20px;">
-                
                 <button onclick="verificarCumplimiento()" style="padding: 10px 20px; font-size: 16px;">Verificar</button>
                 <p id="resultado" style="margin-top: 15px; font-size: 18px; font-weight: bold;"></p>
             </div>
         </div>
+        
+        <script>
+            // Función que carga una imagen aleatoria al cargar la página
+            window.onload = function() {
+                const imagenes = [
+                    "{{ url_for('static', filename='Assets/1.png') }}",
+                    "{{ url_for('static', filename='Assets/2.png') }}",
+                    "{{ url_for('static', filename='Assets/3.png') }}",
+                    "{{ url_for('static', filename='Assets/4.png') }}",
+                    "{{ url_for('static', filename='Assets/5.png') }}",
+                    "{{ url_for('static', filename='Assets/6.png') }}",
+                    "{{ url_for('static', filename='Assets/7.png') }}",
+                    "{{ url_for('static', filename='Assets/8.png') }}",
+                    "{{ url_for('static', filename='Assets/9.png') }}",
+                    "{{ url_for('static', filename='Assets/10.png') }}"
+                ];
+        
+                const indice = Math.floor(Math.random() * imagenes.length);
+                document.getElementById("randomImage").src = imagenes[indice];
+            };
+        </script>
+        
     </div>
 
     <!-- Script para manejar el menú y la verificación -->
