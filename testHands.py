@@ -136,8 +136,13 @@ def gen_frames():
     cam.release()
 
 @app.route('/')
+def login():
+    return render_template('login.html')
+
+@app.route('/index.html')
 def index():
     return render_template('index.html')
+
 
 @app.route('/video_feed')
 def video_feed():
