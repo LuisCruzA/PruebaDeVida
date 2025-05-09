@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import cv2 as cv
 import pickle as pick
 import os
@@ -11,55 +12,62 @@ import numpy as np
 
 GESTURE_DIR = "gestos_guardados"
 os.makedirs(GESTURE_DIR, exist_ok=True)
+=======
+import cv2
+import mediapipe as mp
+import base64
+import numpy as np
+from flask import Flask, jsonify, render_template
+>>>>>>> feature/conexion/front-camara
 
-# Initialize the Hands model
-hands = mp_hands.Hands(
-    static_image_mode=False,  # Set to False for processing video frames
-    max_num_hands=2,           # Maximum number of hands to detect
-    min_detection_confidence=0.5  # Minimum confidence threshold for hand detection
-)
-face = mp_face_mesh.FaceMesh(static_image_mode=False, min_detection_confidence=0.5)
-# face_mesh = mp.solutions.face_mesh.FaceMesh()
+app = Flask(__name__)
 
+<<<<<<< HEAD
 def es_ceja_levantada(landmarks):
     ceja = landmarks[55].y
     ojo = landmarks[159].y
     return ceja < ojo - 0.02
+=======
+# Inicialización de MediaPipe
+mp_drawing = mp.solutions.drawing_utils
+mp_hands = mp.solutions.hands
+mp_face_mesh = mp.solutions.face_mesh
+>>>>>>> feature/conexion/front-camara
 
-# Open the camera
-cam = cv.VideoCapture(0)
+# Función para inicializar el procesamiento de la cámara
+def initialize_camera():
+    return cv2.VideoCapture(0)
 
-while cam.isOpened():
-    # Read a frame from the camera
-    success, frame = cam.read()
+# Función para procesar el frame y detectar manos y rostro
+def process_frame(frame, hands, face_mesh):
+    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
-    # If the frame is not available, skip this iteration
-    if not success:
-        print("Camera Frame not available")
-        continue
+    hands_results = hands.process(frame_rgb)
+    face_results = face_mesh.process(frame_rgb)
 
-    # Convert the frame from BGR to RGB (required by MediaPipe)
-    frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
+    # Dibuja las manos detectadas
+    if hands_results.multi_hand_landmarks:
+        for landmarks in hands_results.multi_hand_landmarks:
+            mp_drawing.draw_landmarks(frame, landmarks, mp_hands.HAND_CONNECTIONS)
 
-    # Process the frame for hand detection and tracking
-    hands_detected = hands.process(frame)
-    face_detected = face.process(frame)
+    # Dibuja los puntos faciales
+    if face_results.multi_face_landmarks:
+        for face_landmarks in face_results.multi_face_landmarks:
+            mp_drawing.draw_landmarks(frame, face_landmarks, mp_face_mesh.FACEMESH_CONTOURS)
 
+    return frame
 
-    # Convert the frame back from RGB to BGR (required by OpenCV)
-    frame = cv.cvtColor(frame, cv.COLOR_RGB2BGR)
+# Función para convertir el frame en base64
+def encode_frame(frame):
+    _, buffer = cv2.imencode('.jpg', frame)
+    frame_bytes = buffer.tobytes()
+    return base64.b64encode(frame_bytes).decode('utf-8')
 
-    # If hands are detected, draw landmarks and connections on the frame
-    if hands_detected.multi_hand_landmarks:
-        for hand_landmarks in hands_detected.multi_hand_landmarks:
-            drawing.draw_landmarks(
-                frame,
-                hand_landmarks,
-                mp_hands.HAND_CONNECTIONS,
-                drawing_styles.get_default_hand_landmarks_style(),
-                drawing_styles.get_default_hand_connections_style(),
-            )
+@app.route('/')
+def index():
+    return render_template('index.html')
 
+<<<<<<< HEAD
     if face_detected.multi_face_landmarks:
         landmarks = face_detected.multi_face_landmarks[0].landmark
         current_face = [(lm.x, lm.y) for lm in landmarks]
@@ -119,10 +127,24 @@ while cam.isOpened():
     
     # Display the frame with annotations
     cv.imshow("Show Video", frame)
+=======
+@app.route("/capture_gestures")
+def capture_gestures():
+    cap = initialize_camera()
+    hands = mp_hands.Hands()
+    face_mesh = mp_face_mesh.FaceMesh()
 
-    # Exit the loop if 'q' key is pressed
-    if cv.waitKey(20) & 0xff == ord('q'):
-        break
+    ret, frame = cap.read()
+    if not ret:
+        return jsonify({'error': 'No se pudo capturar la imagen'})
+>>>>>>> feature/conexion/front-camara
 
-# Release the camera
-cam.release()
+    processed_frame = process_frame(frame, hands, face_mesh)
+    encoded_frame = encode_frame(processed_frame)
+
+    cap.release()
+
+    return jsonify({'image': encoded_frame})
+
+if __name__ == '__main__':
+    app.run(debug=True)
