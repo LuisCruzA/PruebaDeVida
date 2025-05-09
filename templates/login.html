@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/estiloslogin.css') }}">
+</head>
+<body>
+  <div class="background">
+    <div class="form-container">
+      <h1 class="title">Login</h1>
+      <p class="subtitle">
+        Inicia sesión con tu cuenta para acceder a nuestros servicios
+      </p>
+
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="usuario@gmail.com" required>
+      </div>
+
+      <div class="form-group">
+        <label for="loginPassword">Contraseña</label>
+        <div class="password-wrapper">
+          <input type="password" id="loginPassword" placeholder="Introduce tu contraseña" required>
+          <span id="toggleLoginPassword" class="toggle-icon">👁️</span>
+        </div>
+      </div>
+
+      <button id="loginButton" class="submit-button">Iniciar Sesión</button>
+    </div>
+  </div>
+
+  <a href="{{ url_for('index') }}" class="submit-button">Iniciar Sesión</a>
+
+  <script>
+    const loginPassword = document.getElementById("loginPassword");
+    const toggleLoginPassword = document.getElementById("toggleLoginPassword");
+
+    toggleLoginPassword.addEventListener("click", () => {
+      const isPassword = loginPassword.type === "password";
+      loginPassword.type = isPassword ? "text" : "password";
+      toggleLoginPassword.textContent = isPassword ? "🙈" : "👁️";
+    });
+
+    // Evento para manejar el clic en el botón de inicio de sesión
+    document.getElementById("loginButton").addEventListener("click", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("loginPassword").value;
+
+      // Verificar si los campos están vacíos
+      if (!email || !password) {
+        alert("Por favor, completa todos los campos.");
+        return;
+      }
+
+      // Simulación de las credenciales correctas
+      const correctEmail = "default@gmail.com";
+      const correctPassword = "12345678";
+
+      // Comprobar si las credenciales son correctas
+      if (email === correctEmail && password === correctPassword) {
+    alert("Inicio de sesión exitoso");
+    window.location.href = '/index.html';
+       
+      } else {
+        alert("Correo o contraseña incorrectos.");
+      }
+    });
+  </script>
+</body>
+</html>
