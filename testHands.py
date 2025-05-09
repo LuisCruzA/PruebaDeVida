@@ -4,6 +4,46 @@ import mediapipe.python.solutions.hands as mp_hands
 import mediapipe.python.solutions.drawing_utils as drawing
 import mediapipe.python.solutions.drawing_styles as drawing_styles
 import mediapipe.python.solutions.face_mesh as mp_face_mesh
+from scipy.spatial.distance import euclidean
+import math
+import numpy as np
+
+MOUTH_LEFT = 61
+MOUTH_RIGHT = 291
+MOUTH_TOP = 13
+MOUTH_BOTTOM = 14
+EYEBROWLEFT = 52
+EYELEFT = 159
+EYEBROWRIGHT = 33
+EYERIGHT = 263
+
+BARBILLA1= 148
+BARBILLA2= 152
+BARBILLA3= 377
+
+MANDIBULAIZQ = 58
+MANDIBULADER = 288
+
+NOSEBOTTOM = 94
+NOSETOP = 6
+
+EYELEFTBOTTOM = 145
+
+def distancia_2d(p1, p2):
+    dx = p2.x - p1.x
+    dy = p2.y - p1.y
+    return math.sqrt(abs(dx**2 + dy**2))
+
+# def distancia_2d(p1, p2):
+#     return math.sqrt((p1.x - p2.x)*2 + (p1.y - p2.y)*2)
+
+
+
+def distancia_3d(p1, p2):
+    dx = p1.x - p2.x
+    dy = p1.y - p2.y
+    dz = p1.z - p2.z
+    return math.sqrt(dx*2 +dy*2+dz*2)
 
 # Funcion para verificar si la mano es un puño
 def is_fist(hand_landmarks):
@@ -124,7 +164,7 @@ while cam.isOpened():
 
     # Convert the frame from BGR to RGB (required by MediaPipe)
     frame = cv.cvtColor(frame, cv.COLOR_BGR2RGB)
-
+    h, w, _ = frame.shape
     # Process the frame for hand detection and tracking
     hands_detected = hands.process(frame)
     face_detected = face.process(frame)
@@ -144,38 +184,187 @@ while cam.isOpened():
                 drawing_styles.get_default_hand_landmarks_style(),
                 drawing_styles.get_default_hand_connections_style(),
             )
-            if is_fist(hand_landmarks):
-                print("¡Puño cerrado!")
+            def fist():
+                if is_fist(hand_landmarks):
+                    return("¡Puño cerrado!")
 
-            if is_peace(hand_landmarks):
-                print("¡Paz y amor!")
+            def peace():
+                if is_peace(hand_landmarks):
+                    return("¡Paz y amor!")
 
-            if is_thumb_up(hand_landmarks):
-                print("¡Pulgar arriba!")
+            def thumb_up():
+                if is_thumb_up(hand_landmarks):
+                    return("¡Pulgar arriba!")
 
-            if is_thumb_up(hand_landmarks):
-                print("¡Pulgar arriba!")
+            def rock():
+                if is_rock(hand_landmarks):
+                    return("¡Rock!")
 
-            if is_rock(hand_landmarks):
-                print("¡Rock!")
+            def extended():
+                if is_extended(hand_landmarks):
+                    return("¡Mano extendida!")
 
-            if is_extended(hand_landmarks):
-                print("¡Mano extendida!")
+            def GestosdeMano():
+                fist()
+                peace()
+                thumb_up()
+                rock()
+                extended()
+            GestosdeMano()
 
     if face_detected.multi_face_landmarks:
         landmarks = face_detected.multi_face_landmarks[0].landmark
         current_face = [(lm.x, lm.y) for lm in landmarks]
         for face_landmarks in face_detected.multi_face_landmarks:
-            drawing.draw_landmarks(
-                frame,
-                face_landmarks,
-                mp_face_mesh.FACEMESH_CONTOURS,
-                # mp_face_mesh.FACEMESH_TESSELATION,
-                # drawing_styles.get_default_face_mesh_contours_style(),
-                # drawing_styles.get_default_face_mesh_tesselation_style(),
-                landmark_drawing_spec=None,
-                connection_drawing_spec=drawing_styles.get_default_face_mesh_contours_style()
-            )
+            # drawing.draw_landmarks(
+            #     frame,
+            #     # face_landmarks,
+            #     # mp_face_mesh.FACEMESH_CONTOURS,
+            #     # mp_face_mesh.FACEMESH_TESSELATION,
+            #     # drawing_styles.get_default_face_mesh_contours_style(),
+            #     # drawing_styles.get_default_face_mesh_tesselation_style(),
+            #     # landmark_drawing_spec=None,
+            #     # connection_drawing_spec=drawing_styles.get_default_face_mesh_contours_style()
+            # )
+
+            left = landmarks[MOUTH_LEFT]
+            right = landmarks[MOUTH_RIGHT]
+            top = landmarks[MOUTH_TOP]
+            bottom = landmarks[MOUTH_BOTTOM]
+
+            eyeleft = landmarks[EYELEFT]
+            eyebrowleft = landmarks[EYEBROWLEFT]
+            eyeright = landmarks[EYERIGHT]
+            eyebrowright = landmarks[EYEBROWRIGHT]
+
+            barbilla1 = landmarks[BARBILLA1]
+            barbilla2 = landmarks[BARBILLA2]
+            barbilla3 = landmarks[BARBILLA3]
+
+            mandibulaIzq = landmarks[MANDIBULAIZQ]
+            mandibulaDer = landmarks[MANDIBULADER]
+
+            nosetop = landmarks[NOSETOP]
+            nosebottom = landmarks[NOSEBOTTOM]
+
+            eyeleftbottom = landmarks[EYELEFTBOTTOM]
+
+            # Convertir a píxeles
+            left_pt = (int(left.x * w), int(left.y * h))
+            right_pt = (int(right.x * w), int(right.y * h))
+            top_pt = (int(top.x * w), int(top.y * h))
+            bottom_pt = (int(bottom.x * w), int(bottom.y * h))
+
+            eyeleft_pt = (int(eyeleft.x * w), int(eyeleft.y * h))
+            eyebrowleft_pt = (int(eyebrowleft.x * w), int(eyebrowleft.y * h))
+            eyeright_pt = (int(eyeright.x * w), int(eyeright.y * h))
+            eyebrowright_pt = (int(eyebrowright.x * w), int(eyebrowright.y * h))
+
+            barbilla1_pt = (int(barbilla1.x * w), int(barbilla1.y * h))
+            barbilla2_pt = (int(barbilla2.x * w), int(barbilla2.y * h))
+            barbilla3_pt = (int(barbilla3.x * w), int(barbilla3.y * h))
+
+            mandibulaIzq_pt = (int(mandibulaIzq.x * w), int(mandibulaIzq.y * h))
+            mandibulaDer_pt = (int(mandibulaDer.x * w), int(mandibulaDer.y * h))
+
+            nosebottom_pt = (int(nosebottom.x * w), int(nosebottom.y * h))
+            nosetop_pt = (int(nosetop.x * w), int(nosetop.y * h))
+
+            eyeleftbottom_pt = (int(eyeleftbottom.x * w), int(eyeleftbottom.y * h))
+
+            # Dibujar puntos
+            for pt in [left_pt, right_pt, top_pt, bottom_pt]:
+                cv.circle(frame, pt, 2, (0, 255, 0), -1)
+
+            for pt in [eyeleft_pt, eyebrowleft_pt, eyeright_pt, eyebrowright_pt, eyeleftbottom_pt]:
+                cv.circle(frame, pt, 2, (0, 255, 0), -1)
+            
+            for pt in [barbilla1_pt, barbilla2_pt, barbilla3_pt]:
+                cv.circle(frame, pt, 2, (0, 255, 0), -1)
+            
+            for pt in [mandibulaIzq_pt, mandibulaDer_pt]:
+                cv.circle(frame, pt, 2, (0, 255, 0), -1)
+
+            for pt in [nosebottom_pt, nosetop_pt]:
+                cv.circle(frame, pt, 2, (0, 255, 0), -1)    
+
+            # Calcular distancias
+            mouth_width = euclidean(left_pt, right_pt)
+            mouth_height = euclidean(top_pt, bottom_pt)
+
+            # Relación: ancho vs. alto de la boca
+            ratio = mouth_width / mouth_height if mouth_height != 0 else 0
+
+            distance_eye_eyebrow = distancia_2d(eyeleft, eyebrowleft)
+
+            # Distancia entre pupilas (usada para normalizar)
+            dist_pupilas = distancia_2d(eyeright, eyeleft)
+
+            distance_left_head = distancia_2d(left, mandibulaIzq)
+            distance_right_head = distancia_2d(mandibulaDer, right)
+            dist_nose = distancia_2d(nosebottom, nosetop)
+
+            dist_eye = distancia_2d(eyeleft, eyeleftbottom)
+
+            # Distancia normalizada
+            dist_normalizada = distance_eye_eyebrow / dist_pupilas
+            dist_normalizada_ojos = dist_eye / dist_pupilas
+            # print(dist_normalizada_ojos)
+
+            dist_norm_headright = distance_left_head / dist_nose
+
+            def Sonrisa():
+                if ratio > 10:
+                    # cv.putText(frame, "Neutral", (30, 50),
+                    # cv.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
+                    return False
+                else:
+                    # cv.putText(frame, "¡Sonriendo!", (30, 50),
+                    # cv.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 2)
+                    return("Está sonriendo") 
+
+            def CejaLevantada():
+                if dist_normalizada > 0.65:
+                    # cv.putText(frame, "Ceja levantada! ", (30, 50),
+                    # cv.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
+                    return( "Está levantando una ceja")
+                else:
+                    # cv.putText(frame, "Neutral", (30, 50),
+                    # cv.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 2)
+                    return False
+                    
+            def CaradeLado():
+                if distance_left_head > dist_nose:
+                    # cv.putText(frame, "Cara de Lado! ", (30, 50),
+                    # cv.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
+                    return( "Está girando la cabeza")
+                elif distance_right_head > dist_nose:
+                    # cv.putText(frame, "Está girando la cabeza ", (30, 50),
+                    # cv.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
+                    return( "Está girando la cabeza")
+                else:
+                    # cv.putText(frame, "Neutral", (30, 50),
+                    # cv.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 2)
+                    return False
+                    
+            def BocaAbierta():
+                if ratio > 1 and ratio <4:
+                    # cv.putText(frame, "Boca Abierta", (30, 50),
+                    # cv.FONT_HERSHEY_SIMPLEX, 1.2, (0, 0, 255), 3)
+                    return( "Está abriendo la boca")
+                else:
+                    # cv.putText(frame, "Neutral", (30, 50),
+                    # cv.FONT_HERSHEY_SIMPLEX, 1.2, (0, 255, 0), 2)
+                    return False
+                
+            def ReconocerGestos():
+                Sonrisa()
+                CejaLevantada()
+                CaradeLado()
+                BocaAbierta()
+                
+
+            ReconocerGestos()
 
     # Display the frame with annotations
     cv.imshow("Show Video", frame)
