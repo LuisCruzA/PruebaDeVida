@@ -29,6 +29,7 @@
         <div class="video-container" style="width: 50%;">
             <h2 style="text-align: center;">Cámara en Vivo</h2>
             <img src="{{ url_for('video_feed') }}" id="videoStream" style="width: 100%; height: 70vh; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);" />
+            <img id="imagenGesto" src="{{ url_for('static', filename='Assets/1.png') }}" alt="Imagen del gesto" />
         </div>
 
         <!-- Contenedor de imagen aleatoria y verificación a la derecha -->
@@ -50,11 +51,10 @@
             "{{ url_for('static', filename='Assets/1.png') }}",
             "{{ url_for('static', filename='Assets/2.png') }}",
             "{{ url_for('static', filename='Assets/3.png') }}",
-            "{{ url_for('static', filename='Assets/4.png') }}",
             "{{ url_for('static', filename='Assets/5.png') }}",
             "{{ url_for('static', filename='Assets/6.png') }}",
             "{{ url_for('static', filename='Assets/7.png') }}",
-            "{{ url_for('static', filename='Assets/8.png') }}",
+            "{{ url_for('static', filename='Assets/8.jpeg') }}",
             "{{ url_for('static', filename='Assets/9.png') }}",
             "{{ url_for('static', filename='Assets/10.png') }}"
         ];
@@ -71,17 +71,70 @@
             document.getElementById("resultado").textContent = ""; // limpia resultado anterior
         }
 
+        
+
         function toggleMenu() {
             var menu = document.getElementById("sideMenu");
             menu.classList.toggle("open");
         }
 
         function verificarCumplimiento() {
-            const resultado = Math.random() < 0.5 ? "Cumple" : "No cumple";
+
+             fetch('/api/gestoCara')
+
+                .then(response => response.json())
+                .then(data => {
+                    const numeroPython = data.numero;
+
+                })
+                if (data.sonrisa === indice || data.bocaAbierta === indice || data.caradeLado === indice || data.ceja_levantada === indice) {
+                    resultado = "Cumple";
+                    return resultado;
+                }
+
+            fetch('/api/gestoMano   ')
+                .then(response => response.json())
+                .then(data => {
+                    const numeroPython = data.numero;
+
+                })
+                if (data.fist === indice || data.peace === indice || data.thumb_up === indice || data.rock === indice, data.extended === indice) {
+                    resultado = "Cumple";
+                    return resultado;
+                }
+            // const resultado = Math.random() < 0.5 ? "Cumple" : "No cumple";
             const resultadoElem = document.getElementById("resultado");
             resultadoElem.textContent = resultado;
             resultadoElem.style.color = resultado === "Cumple" ? "green" : "red";
-        }
+
+            async function obtenerGestoYActualizarImagen() {
+                try {
+                    const respuesta = await fetch('/api/gestoCara');
+                    const datos = await respuesta.json();
+
+                    // Puedes imprimir esto para ver qué se recibe
+                    console.log("Datos recibidos:", datos);
+
+                    // Prioridad: si hay algún gesto activado, mostrar su imagen
+                    // Puedes cambiar esta lógica a tu gusto
+                    let gesto = 0;
+                    if (datos.bocaAbierta) gesto = datos.bocaAbierta;
+                    else if (datos.caradeLado) gesto = datos.caradeLado;
+                    else if (datos.ceja_levantada) gesto = datos.ceja_levantada;
+                    else if (datos.sonrisa) gesto = datos.sonrisa;
+
+                    const indice = gesto > 0 ? gesto - 1 : 0;
+                    document.getElementById("imagenGesto").src = imagenes[indice] || imagenes[0];
+
+                } catch (error) {
+                    console.error("Error al obtener datos del backend:", error);
+                }
+            }
+
+            // Llamar a la función cada segundo (ajusta si necesitas menos frecuencia)
+            setInterval(obtenerGestoYActualizarImagen, 1000);
+                        
+                    }
     </script>
 </body>
 </html>
