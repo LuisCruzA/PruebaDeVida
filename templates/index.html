@@ -10,7 +10,6 @@
     <!-- Botón para abrir menú -->
     <button class="open-menu-btn" onclick="toggleMenu()">☰</button>
 
-    
     <!-- Menú lateral -->
     <div class="side-menu" id="sideMenu">
         <span class="close-btn" onclick="toggleMenu()">&times;</span>
@@ -39,56 +38,53 @@
             <div style="margin-top: 20px;">
                 <button onclick="verificarCumplimiento()" style="padding: 10px 20px; font-size: 16px;">Verificar</button>
                 <p id="resultado" style="margin-top: 15px; font-size: 18px; font-weight: bold;"></p>
+                <!-- Nuevo botón para cambiar imagen -->
+                <button onclick="cargarNuevaImagen()" style="padding: 10px 20px; font-size: 16px; margin-top: 15px;">Siguiente imagen</button>
             </div>
         </div>
-        
-        <script>
-            // Función que carga una imagen aleatoria al cargar la página
-            window.onload = function() {
-                const imagenes = [
-                    "{{ url_for('static', filename='Assets/1.png') }}",
-                    "{{ url_for('static', filename='Assets/2.png') }}",
-                    "{{ url_for('static', filename='Assets/3.png') }}",
-                    "{{ url_for('static', filename='Assets/4.png') }}",
-                    "{{ url_for('static', filename='Assets/5.png') }}",
-                    "{{ url_for('static', filename='Assets/6.png') }}",
-                    "{{ url_for('static', filename='Assets/7.png') }}",
-                    "{{ url_for('static', filename='Assets/8.png') }}",
-                    "{{ url_for('static', filename='Assets/9.png') }}",
-                    "{{ url_for('static', filename='Assets/10.png') }}"
-                ];
-        
-                const indice = Math.floor(Math.random() * imagenes.length);
-                document.getElementById("randomImage").src = imagenes[indice];
-            };
-        </script>
-        
     </div>
 
-    <!-- Script para manejar el menú y la verificación -->
+    <!-- Script para manejar el menú y las imágenes -->
     <script>
+        const imagenes = [
+            "{{ url_for('static', filename='Assets/1.png') }}",
+            "{{ url_for('static', filename='Assets/2.png') }}",
+            "{{ url_for('static', filename='Assets/3.png') }}",
+            "{{ url_for('static', filename='Assets/4.png') }}",
+            "{{ url_for('static', filename='Assets/5.png') }}",
+            "{{ url_for('static', filename='Assets/6.png') }}",
+            "{{ url_for('static', filename='Assets/7.png') }}",
+            "{{ url_for('static', filename='Assets/8.png') }}",
+            "{{ url_for('static', filename='Assets/9.png') }}",
+            "{{ url_for('static', filename='Assets/10.png') }}"
+        ];
+
+        // Cargar imagen aleatoria al inicio
+        window.onload = function() {
+            cargarNuevaImagen();
+        };
+
+        // Función para cargar una nueva imagen aleatoria
+        function cargarNuevaImagen() {
+            const indice = Math.floor(Math.random() * imagenes.length);
+            document.getElementById("randomImage").src = imagenes[indice];
+            document.getElementById("resultado").textContent = ""; // limpia resultado anterior
+        }
+
         function toggleMenu() {
             var menu = document.getElementById("sideMenu");
-            if (menu.classList.contains("open")) {
-                menu.classList.remove("open");
-            } else {
-                menu.classList.add("open");
-            }
+            menu.classList.toggle("open");
         }
 
         function verificarCumplimiento() {
-            // Simulación aleatoria para ejemplo (puedes reemplazarlo con lógica real del backend)
             const resultado = Math.random() < 0.5 ? "Cumple" : "No cumple";
             const resultadoElem = document.getElementById("resultado");
             resultadoElem.textContent = resultado;
             resultadoElem.style.color = resultado === "Cumple" ? "green" : "red";
         }
-
-        
-        
-
     </script>
 </body>
 </html>
+
 
 
